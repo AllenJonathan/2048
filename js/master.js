@@ -68,17 +68,20 @@ function addNode(gameData) {
       }
     }
   }
-  random = Math.floor(Math.random() * emptyNodes.length);
-  choosenNode = emptyNodes[random];
-  x = parseInt(choosenNode[0]);
-  y = parseInt(choosenNode[1]);
-  fourProbability = 0.1;
-  if (Math.random() <= fourProbability) {
-    num = 4;
-  } else {
-    num = 2;
+  if (emptyNodes.length > 0) {
+    random = Math.floor(Math.random() * emptyNodes.length);
+    choosenNode = emptyNodes[random];
+    x = parseInt(choosenNode[0]);
+    y = parseInt(choosenNode[1]);
+    fourProbability = 0.1;
+    if (Math.random() <= fourProbability) {
+      num = 4;
+    } else {
+      num = 2;
+    }
+    gameData[y][x] = num;
   }
-  gameData[y][x] = num;
+
 }
 
 function _swap(gameData,x1,y1,x2,y2) {
@@ -215,9 +218,6 @@ function move(event, gameData, numberColors) {
   } else if (key === "ArrowLeft") {
     moveLeft(gameData);
   }
-  displayData(gameData);
-  giveColor(numberColors);
-  score += 20
 }
 
 function mainGame(gameData, numberColors) {
@@ -225,12 +225,67 @@ function mainGame(gameData, numberColors) {
   giveColor(numberColors);
   document.addEventListener('keydown', (event) => {
     if (event.key.startsWith("Arrow")) {
+      previousBoard = getBoardCopy(gameData);
       move(event, gameData, numberColors)
-      document.getElementById("score").innerText = "Score: " + score;
-      addNode(gameData)
+      console.log(previousBoard, gameData)
+      if (previousBoard !== gameData) {
+        score += 20
+        document.getElementById("score").innerText = "Score: " + score;
+        addNode(gameData)
+      }
+      gameOver = checkGameOver(gameData)
+      if (gameOver) {
+        displayGameOver()
+      }
+      displayData(gameData);
+      giveColor(numberColors);
     }
   })
 }
+
+function checkGameOver(gameData) {
+  for (y = 0; y < 4; y++) {
+    for (x = 0; x < 4; x++) {
+
+        if (gameData[y][x] === 0) {
+          return false
+        }
+        if (y < 3) {
+          if (gameData[y][x] === gameData[y+1][x]) {
+            return false
+          }
+        }
+        if (x < 3) {
+          if (gameData[y][x] === gameData[y][x+1]) {
+            return false
+          }
+        }
+
+    }
+  }
+  return true
+}
+
+function displayGameOver() {
+  gameOverElement = document.getElementById("game-over");
+  gameOverElement.style.visibility = "visible";
+}
+
+function getBoardCopy(gameData) {
+  boardCopy = [
+    [0,0,0,0],
+    [0,0,0,0],
+    [0,0,0,0],
+    [0,0,0,0],
+  ];
+  for (i = 0; i < 4; i++) {
+    for (j = 0; j < 4; j++) {
+      boardCopy[j][i] = gameData[j][i];
+    }
+  }
+  return boardCopy
+}
+
 
 mainGame(gameData, numberColors)
 

@@ -44,3 +44,11 @@ div p {
   font-family: cursive;
   color: orange;
 }
+
+#game-over {
+  margin-top: 30px;
+  text-align: center;
+  font-family: monospace;
+  text-shadow: 2px 2px #abcedf;
+  visibility: hidden;
+}
